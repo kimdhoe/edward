@@ -1,7 +1,10 @@
-const Home = () => (
-  <div>
-    <h1>A WIP</h1>
-  </div>
-)
+import React from "react";
+import { NextPage } from "next";
 
-export default Home
+const Home: NextPage = () => (
+  <div>
+    <p>Content</p>
+  </div>
+);
+
+export default Home;
