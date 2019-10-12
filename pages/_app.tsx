@@ -1,15 +1,15 @@
-import React from "react";
-import App from "next/app";
+import React from 'react'
+import App from 'next/app'
+
+import { Header } from '../components/header'
 
 class MyApp extends App {
   render() {
-    const { Component, pageProps } = this.props;
+    const { Component, pageProps } = this.props
 
     return (
       <div>
-        <header>
-          <h1>A WIP</h1>
-        </header>
+        <Header />
 
         <Component {...pageProps} />
       </div>
