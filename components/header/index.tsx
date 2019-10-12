@@ -12,5 +12,4 @@ const Header: React.FunctionComponent = () => (
     <h1>A-WIP</h1>
   </header>
 )
-
 export { Header }
