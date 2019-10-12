@@ -1,7 +1,7 @@
 import React from 'react'
 import App from 'next/app'
 
-import { Header } from '../components/header'
+import { Header, Footer } from '../components'
 
 class MyApp extends App {
   render() {
@@ -10,8 +10,10 @@ class MyApp extends App {
     return (
       <div>
         <Header />
-
-        <Component {...pageProps} />
+        <main>
+          <Component {...pageProps} />
+        </main>
+        <Footer />
       </div>
     )
   }

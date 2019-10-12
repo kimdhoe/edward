@@ -1,7 +1,12 @@
 import React from 'react'
+import { css } from '@emotion/core'
 
-const Header = () => (
-  <header>
+const Header: React.FunctionComponent = () => (
+  <header
+    css={css`
+      background-color: red;
+    `}
+  >
     <h1>A-WIP</h1>
   </header>
 )

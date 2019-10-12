@@ -1,9 +1,5 @@
-import React from "react";
+import React from 'react'
 
-const Header = () => (
-  <header>
-    <h1>A-WIP</h1>
-  </header>
-);
+const Footer: React.FunctionComponent = () => <footer>Footer</footer>
 
-export { Header };
+export { Footer }
