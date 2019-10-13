@@ -3,12 +3,11 @@ import App, { AppContext } from 'next/app'
 import { Store } from 'redux'
 import { Provider } from 'react-redux'
 import withRedux from 'next-redux-wrapper'
-import { css } from '@emotion/core'
 import 'normalize.css/normalize.css'
 
 import '../style.css'
 import { initializeStore } from '../core/store'
-import { Header, Footer } from '../components'
+import { Layout } from '../components/layout'
 
 interface Props {
   store: Store
@@ -29,28 +28,13 @@ const MyAppWithRedux = withRedux(initializeStore)(
 
       return (
         <Provider store={store}>
-          <div css={styles.container}>
-            <Header />
-            <main css={styles.content}>
-              <Component {...pageProps} />
-            </main>
-            <Footer />
-          </div>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </Provider>
       )
     }
   }
 )
-
-const styles = {
-  container: css`
-    display: flex;
-    min-height: 100vh;
-    flex-direction: column;
-  `,
-  content: css`
-    flex: 1;
-  `,
-}
 
 export default MyAppWithRedux
