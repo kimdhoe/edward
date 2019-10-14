@@ -1,21 +1,41 @@
 import React, { useState, useCallback } from 'react'
+import Router from 'next/router'
+import { useDispatch } from 'react-redux'
 import { css } from '@emotion/core'
 
+import { signIn } from '../core/services/auth'
+import { gotUser } from '../core/actions/user'
+
 const SignIn = () => {
+  const dispatch = useDispatch()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
 
     if (name === 'email') setEmail(value)
     else if (name === 'password') setPassword(value)
+
+    setError('')
   }, [])
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log(email)
-    console.log(password)
+
+    try {
+      const res = await signIn(email, password)
+
+      if (res.ok) {
+        dispatch(gotUser(res.data.user))
+        Router.push('/')
+      } else {
+        setError(res.data.message)
+      }
+    } catch (err) {
+      setError('Something went wrong')
+    }
   }
 
   return (
@@ -50,6 +70,11 @@ const SignIn = () => {
             onChange={handleChange}
           />
         </div>
+
+        <div css={styles.error}>
+          <p css={styles.errorText}>{error}</p>
+        </div>
+
         <div css={styles.buttonContainer}>
           <button css={styles.button} type="submit">
             Sign In
@@ -77,6 +102,10 @@ const styles = {
     padding: 1rem;
     max-width: 300px;
     background-color: #f1f3f5;
+  `,
+  error: css``,
+  errorText: css`
+    color: red;
   `,
   buttonContainer: css`
     margin-top: 1.5rem;

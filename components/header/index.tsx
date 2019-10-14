@@ -1,30 +1,46 @@
 import React from 'react'
 import Link from 'next/link'
-import { connect } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { css } from '@emotion/core'
 
 import { AppState } from '../../core/store'
+import { User } from '../../core/types/user'
+import * as auth from '../../core/services/auth'
 
-interface Props {
-  user: any
+const Header: React.FunctionComponent = () => {
+  const user = useSelector((state: AppState) => state.user)
+
+  return (
+    <header css={styles.container}>
+      <h1>
+        <Link href="/">
+          <a>A-WIP</a>
+        </Link>
+      </h1>
+      <nav>{user ? <NavSignedIn user={user} /> : <NavSignedOut />}</nav>
+    </header>
+  )
 }
 
-const _Header: React.FunctionComponent<Props> = ({ user }) => (
-  <header css={styles.container}>
-    <h1>
-      <Link href="/">
-        <a>A-WIP</a>
-      </Link>
-    </h1>
-    <nav>{user ? <NavSignedIn /> : <NavSignedOut />}</nav>
-  </header>
-)
+interface NavSignedInProps {
+  user: User
+}
 
-const NavSignedIn = () => (
-  <div css={styles.nav}>
-    <button>Sign Out</button>
-  </div>
-)
+const NavSignedIn: React.FunctionComponent<NavSignedInProps> = ({ user }) => {
+  const handleSignOut = async () => {
+    await auth.signOut()
+    window.location.reload(true)
+  }
+
+  return (
+    <div css={styles.nav}>
+      <div css={styles.navItem}>{user.name}</div>
+      <div css={styles.navItem}>
+        <button onClick={handleSignOut}>Sign Out</button>
+      </div>
+    </div>
+  )
+}
 
 const NavSignedOut = () => (
   <div css={styles.nav}>
@@ -45,6 +61,14 @@ const styles = {
   `,
   nav: css`
     display: flex;
+    align-items: center;
+  `,
+  navItem: css`
+    margin-left: 1.2rem;
+
+    &:first-of-type {
+      margin-left: 0;
+    }
   `,
   navLink: css`
     margin-left: 1.2rem;
@@ -54,9 +78,5 @@ const styles = {
     }
   `,
 }
-
-const mapStateToProps = (state: AppState) => ({ user: state.user })
-
-const Header = connect(mapStateToProps)(_Header)
 
 export { Header }

@@ -7,13 +7,10 @@ type NextPageContextWithStore = NextPageContext & { store: Store }
 
 interface Props {
   projects: number[]
-  user: any
 }
 
-const _Home: NextPage<Props> = ({ projects, user }) => {
-  useEffect(() => {
-    console.log('user', user)
-  }, [])
+const _Home: NextPage<Props> = ({ projects }) => {
+  useEffect(() => {}, [])
 
   return (
     <div>
@@ -33,7 +30,6 @@ const _Home: NextPage<Props> = ({ projects, user }) => {
 _Home.getInitialProps = async (context: NextPageContextWithStore) => {
   return {
     projects: [0, 1, 2, 3, 4, 5],
-    user: context.store.getState().user,
   }
 }
 
