@@ -1,4 +1,5 @@
 import React from 'react'
+import Link from 'next/link'
 import { connect } from 'react-redux'
 import { css } from '@emotion/core'
 
@@ -10,9 +11,30 @@ interface Props {
 
 const _Header: React.FunctionComponent<Props> = ({ user }) => (
   <header css={styles.container}>
-    <h1>A-WIP</h1>
-    <nav>{user ? <div>{user.name}</div> : <div>Login</div>}</nav>
+    <h1>
+      <Link href="/">
+        <a>A-WIP</a>
+      </Link>
+    </h1>
+    <nav>{user ? <NavSignedIn /> : <NavSignedOut />}</nav>
   </header>
+)
+
+const NavSignedIn = () => (
+  <div css={styles.nav}>
+    <button>Sign Out</button>
+  </div>
+)
+
+const NavSignedOut = () => (
+  <div css={styles.nav}>
+    <Link href="/signin">
+      <a css={styles.navLink}>Log In</a>
+    </Link>
+    <Link href="/signup">
+      <a css={styles.navLink}>Sign Up</a>
+    </Link>
+  </div>
 )
 
 const styles = {
@@ -20,7 +42,16 @@ const styles = {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #f1f3f5;
+  `,
+  nav: css`
+    display: flex;
+  `,
+  navLink: css`
+    margin-left: 1.2rem;
+
+    &:first-of-type {
+      margin-left: 0;
+    }
   `,
 }
 
