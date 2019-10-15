@@ -4,6 +4,8 @@ import Router from 'next/router'
 import { css } from '@emotion/core'
 
 import { signUp } from '../core/services/auth'
+import { Facebook } from '../components/facebook-logo'
+import { Google } from '../components/google-logo'
 
 const SignUp = () => {
   const [name, setName] = useState('')
@@ -50,20 +52,31 @@ const SignUp = () => {
 
       <div css={styles.right}>
         <div css={styles.rightWrapper}>
-          <h3 css={styles.slogan}>
+          <h2 css={styles.subHeading}>Join AWIP today</h2>
+          <h3 css={styles.heading}>
             Share your progress,
             <br />
             not perfection.
           </h3>
-
-          <h2 css={styles.join}>Join AWIP today</h2>
-
-          <button css={[styles.snsBuitton, styles.facebookButton]}>
-            Continue with Facebook
-          </button>
-          <button css={[styles.snsBuitton, styles.googleButton]}>
-            Continue with Google
-          </button>
+          <div css={styles.sns}>
+            <div css={styles.continueWith}>
+              <p css={styles.continueWithText}>Continue with</p>
+            </div>
+            <div css={styles.snsButtons}>
+              <button css={[styles.snsButton, styles.facebookButton]}>
+                <span css={styles.snsIcon}>
+                  <Facebook />
+                </span>
+                Facebook
+              </button>
+              <button css={[styles.snsButton, styles.googleButton]}>
+                <span css={styles.snsIcon}>
+                  <Google />
+                </span>
+                Google
+              </button>
+            </div>
+          </div>
 
           <div css={styles.or}>
             <span css={styles.orText}>or</span>
@@ -124,15 +137,21 @@ const SignUp = () => {
             </div>
 
             <p css={styles.terms}>
-              By continuing, you agree to AWIP&apos;s Terms of Service and
-              Privacy Policy.
+              By continuing, you agree to AWIP&apos;s{' '}
+              <Link href="">
+                <a css={styles.termLink}>Terms of Service</a>
+              </Link>{' '}
+              and{' '}
+              <Link href="">
+                <a css={styles.termLink}>Privacy Policy.</a>
+              </Link>
             </p>
           </form>
         </div>
-        <div css={styles.signin}>
+        <div css={styles.signIn}>
           Already a member?{' '}
           <Link href="/signin">
-            <a css={styles.signinLink}>Sign In</a>
+            <a css={styles.signInLink}>Sign In</a>
           </Link>
         </div>
       </div>
@@ -142,7 +161,7 @@ const SignUp = () => {
 
 const styles = {
   container: css`
-    min-height: 800px;
+    min-height: 750px;
     flex: 1;
     display: flex;
     flex-direction: row;
@@ -173,14 +192,14 @@ const styles = {
   rightWrapper: css`
     width: 350px;
   `,
-  heading: css``,
-  slogan: css`
+  heading: css`
     margin: 0 0 2rem 0;
     line-height: 1.3;
-    font-size: 1.7rem;
+    font-size: 2rem;
   `,
-  join: css`
-    font-size: 1.05rem;
+  subHeading: css`
+    font-size: 0.9rem;
+    font-weight: 500;
   `,
   or: css`
     margin: 2rem 0;
@@ -209,23 +228,62 @@ const styles = {
     margin: 0 0 1.5rem 0;
     font-size: 1.3rem;
   `,
-  snsBuitton: css`
+  sns: css``,
+  continueWith: css`
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+
+    ::before,
+    ::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: #bbb;
+    }
+  `,
+  continueWithText: css`
+    padding: 0 0.5rem;
+    letter-spacing: 0.05rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #888;
+  `,
+  snsButtons: css`
+    display: flex;
+    justify-content: space-between;
+  `,
+  snsButton: css`
+    position: relative;
     outline: none;
     border: none;
-    border-radius: 5px;
+    border-radius: 4px;
     margin-bottom: 0.75rem;
-    padding: 0.9rem;
-    width: 100%;
+    padding: 0.9rem 0;
+    width: 49%;
     font-size: 0.95rem;
     color: white;
     cursor: pointer;
   `,
   facebookButton: css`
     background-color: rgba(66, 103, 178, 0.97);
+
+    :hover {
+      background-color: rgba(66, 103, 178, 1);
+    }
   `,
   googleButton: css`
-    margin-bottom: 0;
     background-color: rgba(219, 68, 55, 0.95);
+
+    :hover {
+      background-color: rgba(219, 68, 55, 1);
+    }
+  `,
+  snsIcon: css`
+    position: absolute;
+    top: 50%;
+    transform: translateY(-47%);
+    left: 1rem;
   `,
   form: css``,
   field: css`
@@ -240,15 +298,19 @@ const styles = {
   `,
   input: css`
     outline: none;
-    border: none;
-    border-radius: 5px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
     padding: 0.75rem 1rem;
     background-color: #f1f3f5;
   `,
   terms: css`
+    margin-top: 1.5rem;
     line-height: 1.7;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #555;
+  `,
+  termLink: css`
+    text-decoration: underline;
   `,
   error: css``,
   errorText: css`
@@ -260,21 +322,25 @@ const styles = {
   button: css`
     outline: none;
     border: none;
-    border-radius: 5px;
-    padding: 0.9rem 1.4rem 0.8rem;
+    border-radius: 4px;
+    padding: 0.9rem 3.5rem 0.8rem;
     font-weight: 500;
     font-size: 0.9rem;
-    background-color: #3c4245;
+    background-color: #495057;
     color: white;
     cursor: pointer;
+
+    :hover {
+      background-color: #343a40;
+    }
   `,
-  signin: css`
+  signIn: css`
     position: absolute;
     top: 30px;
     right: 30px;
     font-size: 0.9rem;
   `,
-  signinLink: css`
+  signInLink: css`
     color: #719192;
   `,
 }

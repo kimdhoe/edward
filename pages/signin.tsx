@@ -6,6 +6,8 @@ import { css } from '@emotion/core'
 
 import { signIn } from '../core/services/auth'
 import { gotUser } from '../core/actions/user'
+import { Facebook } from '../components/facebook-logo'
+import { Google } from '../components/google-logo'
 
 const SignIn = () => {
   const dispatch = useDispatch()
@@ -56,18 +58,32 @@ const SignIn = () => {
 
       <div css={styles.right}>
         <div css={styles.rightWrapper}>
-          <h2 css={styles.heading}>Sign In</h2>
+          <h3 css={styles.subHeading}>Welcome back</h3>
+          <h2 css={styles.heading}>Sign in to AWIP.</h2>
 
-          <p css={styles.slogan}>Share your progress, not perfection.</p>
+          <div css={styles.sns}>
+            <div css={styles.continueWith}>
+              <p css={styles.continueWithText}>Continue with</p>
+            </div>
+            <div css={styles.snsButtons}>
+              <button css={[styles.snsButton, styles.facebookButton]}>
+                <span css={styles.snsIcon}>
+                  <Facebook />
+                </span>
+                Facebook
+              </button>
+              <button css={[styles.snsButton, styles.googleButton]}>
+                <span css={styles.snsIcon}>
+                  <Google />
+                </span>
+                Google
+              </button>
+            </div>
+          </div>
 
-          <button css={[styles.snsBuitton, styles.facebookButton]}>
-            Continue with Facebook
-          </button>
-          <button css={[styles.snsBuitton, styles.googleButton]}>
-            Continue with Google
-          </button>
-
-          <p>or</p>
+          <div css={styles.or}>
+            <span css={styles.orText}>or</span>
+          </div>
 
           <form css={styles.form} onSubmit={handleSubmit}>
             <div css={styles.field}>
@@ -79,7 +95,6 @@ const SignIn = () => {
                 id="emailInput"
                 name="email"
                 type="email"
-                placeholder="jane@example.com"
                 value={email}
                 onChange={handleChange}
               />
@@ -93,7 +108,6 @@ const SignIn = () => {
                 id="passwordInput"
                 name="password"
                 type="password"
-                placeholder="********"
                 value={password}
                 onChange={handleChange}
               />
@@ -110,6 +124,12 @@ const SignIn = () => {
             </div>
           </form>
         </div>
+        <div css={styles.signUp}>
+          Not a member?{' '}
+          <Link href="/signup">
+            <a css={styles.signUpLink}>Sign Up</a>
+          </Link>
+        </div>
       </div>
     </div>
   )
@@ -117,6 +137,7 @@ const SignIn = () => {
 
 const styles = {
   container: css`
+    min-height: 600px;
     flex: 1;
     display: flex;
     flex-direction: row;
@@ -131,6 +152,7 @@ const styles = {
     background-size: cover;
   `,
   right: css`
+    position: relative;
     padding: 2.5rem;
     flex: 1;
     display: flex;
@@ -146,10 +168,34 @@ const styles = {
   rightWrapper: css`
     width: 350px;
   `,
-  heading: css``,
-  slogan: css`
+  subHeading: css`
+    font-size: 0.9rem;
+    font-weight: 500;
+  `,
+  heading: css`
     margin: 0 0 2rem 0;
-    font-size: 1.1rem;
+    line-height: 1.3;
+    font-size: 2rem;
+  `,
+  or: css`
+    margin: 2rem 0;
+    display: flex;
+    align-items: center;
+
+    ::before,
+    ::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: #bbb;
+    }
+  `,
+  orText: css`
+    padding: 0 0.5rem;
+    letter-spacing: 0.05rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #888;
   `,
   bullets: css`
     color: #f1f3f5;
@@ -158,12 +204,39 @@ const styles = {
     margin: 0 0 1.5rem 0;
     font-size: 1.3rem;
   `,
-  snsBuitton: css`
+  sns: css``,
+  continueWith: css`
+    margin: 1rem 0;
+    display: flex;
+    align-items: center;
+
+    ::before,
+    ::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background-color: #bbb;
+    }
+  `,
+  continueWithText: css`
+    padding: 0 0.5rem;
+    letter-spacing: 0.05rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: #888;
+  `,
+  snsButtons: css`
+    display: flex;
+    justify-content: space-between;
+  `,
+  snsButton: css`
+    position: relative;
     outline: none;
     border: none;
-    margin-bottom: 1rem;
-    padding: 1rem;
-    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+    padding: 0.9rem 0;
+    width: 49%;
     font-size: 0.95rem;
     color: white;
     cursor: pointer;
@@ -174,6 +247,12 @@ const styles = {
   googleButton: css`
     background-color: rgba(219, 68, 55, 0.95);
   `,
+  snsIcon: css`
+    position: absolute;
+    top: 50%;
+    transform: translateY(-47%);
+    left: 1rem;
+  `,
   form: css``,
   field: css`
     margin-top: 1rem;
@@ -181,14 +260,15 @@ const styles = {
     flex-direction: column;
   `,
   label: css`
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    font-size: 0.9rem;
   `,
   input: css`
     outline: none;
-    border: none;
-    padding: 1rem;
-    width: 100%;
-    /* max-width: 300px; */
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
     background-color: #f1f3f5;
   `,
   error: css``,
@@ -201,9 +281,26 @@ const styles = {
   button: css`
     outline: none;
     border: none;
-    padding: 1rem;
-    background-color: #f1f3f5;
+    border-radius: 4px;
+    padding: 0.9rem 3.5rem 0.8rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    background-color: #495057;
+    color: white;
     cursor: pointer;
+
+    :hover {
+      background-color: #343a40;
+    }
+  `,
+  signUp: css`
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    font-size: 0.9rem;
+  `,
+  signUpLink: css`
+    color: #719192;
   `,
 }
 
