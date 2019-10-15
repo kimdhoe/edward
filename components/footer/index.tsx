@@ -8,9 +8,7 @@ const Footer: React.FunctionComponent = () => (
 )
 
 const styles = {
-  container: css`
-    background-color: #f1f3f5;
-  `,
+  container: css``,
 }
 
 export { Footer }

@@ -14,7 +14,7 @@ const _Home: NextPage<Props> = ({ projects }) => {
 
   return (
     <div>
-      <h2>Home</h2>
+      <h2>Latest</h2>
 
       <div>
         {projects.map(project => (

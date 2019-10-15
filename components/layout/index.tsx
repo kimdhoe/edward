@@ -1,14 +1,12 @@
 import React from 'react'
-import { Global, css } from '@emotion/core'
+import { css } from '@emotion/core'
 
-import { colors } from '../../core/constants/styles'
 import { Header } from '../header'
 import { Footer } from '../footer'
 
 const Layout: React.FunctionComponent = ({ children }) => {
   return (
     <div css={styles.container}>
-      <Global styles={globalStyles} />
       <div css={styles.wrapper}>
         <Header />
         <main css={styles.content}>{children}</main>
@@ -17,22 +15,6 @@ const Layout: React.FunctionComponent = ({ children }) => {
     </div>
   )
 }
-
-const globalStyles = css`
-  html {
-    --color-text-dark: ${colors.textDark};
-  }
-
-  body {
-    color: var(--color-text-dark);
-  }
-
-  a {
-    text-decoration: none;
-    color: var(--color-text-dark);
-    cursor: pointer;
-  }
-`
 
 const styles = {
   container: css``,
@@ -45,6 +27,7 @@ const styles = {
     min-height: 100vh; /* [1] */
   `,
   content: css`
+    display: flex;
     flex: 1;
   `,
 }
