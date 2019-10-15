@@ -2,36 +2,69 @@ import React, { useState, useCallback } from 'react'
 import Link from 'next/link'
 import Router from 'next/router'
 import { css } from '@emotion/core'
+import validator from 'validator'
+import isEmpty from 'lodash.isempty'
 
+import { ValidationReport } from '../core/types/misc'
 import { signUp } from '../core/services/auth'
 import { Facebook } from '../components/facebook-logo'
 import { Google } from '../components/google-logo'
+
+interface InputFields {
+  name: string
+  email: string
+  password: string
+}
 
 const SignUp = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState<Partial<InputFields>>({})
   const [error, setError] = useState('')
+  const [isPending, setIsPending] = useState(false)
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target
 
-    if (name === 'name') setName(value)
-    else if (name === 'email') setEmail(value)
-    else if (name === 'password') setPassword(value)
+      if (name === 'name') {
+        setName(value)
+        setErrors({ ...errors, name: '' })
+      } else if (name === 'email') {
+        setEmail(value)
+        setErrors({ ...errors, email: '' })
+      } else if (name === 'password') {
+        setPassword(value)
+        setErrors({ ...errors, password: '' })
+      }
 
-    setError('')
-  }, [])
+      setError('')
+    },
+    [errors]
+  )
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsPending(true)
+
+    const { isValid, messages } = validate({ name, email, password })
+
+    if (!isValid) {
+      setErrors(messages)
+      setIsPending(false)
+      return
+    }
 
     try {
       await signUp(name, email, password)
+
       Router.push('/signin')
     } catch (err) {
       const res = await err.response.json()
+
       setError(res.data.message)
+      setIsPending(false)
     }
   }
 
@@ -88,7 +121,7 @@ const SignUp = () => {
                 Name
               </label>
               <input
-                css={styles.input}
+                css={[styles.input, errors.name && styles.inputError]}
                 id="nameInput"
                 name="name"
                 type="text"
@@ -102,7 +135,7 @@ const SignUp = () => {
                 Email
               </label>
               <input
-                css={styles.input}
+                css={[styles.input, errors.email && styles.inputError]}
                 id="emailInput"
                 name="email"
                 type="email"
@@ -116,11 +149,12 @@ const SignUp = () => {
                 Password
               </label>
               <input
-                css={styles.input}
+                css={[styles.input, errors.password && styles.inputError]}
                 id="passwordInput"
                 name="password"
                 type="password"
                 autoComplete="new-password"
+                placeholder="8+ characters"
                 value={password}
                 onChange={handleChange}
               />
@@ -131,7 +165,7 @@ const SignUp = () => {
             </div>
 
             <div css={styles.buttonContainer}>
-              <button css={styles.button} type="submit">
+              <button css={styles.button} type="submit" disabled={isPending}>
                 Create Account
               </button>
             </div>
@@ -226,7 +260,7 @@ const styles = {
   `,
   bullet: css`
     margin: 0 0 1.5rem 0;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   `,
   sns: css``,
   continueWith: css`
@@ -303,6 +337,9 @@ const styles = {
     padding: 0.75rem 1rem;
     background-color: #f1f3f5;
   `,
+  inputError: css`
+    border-color: #fa5252;
+  `,
   terms: css`
     margin-top: 1.5rem;
     line-height: 1.7;
@@ -314,7 +351,8 @@ const styles = {
   `,
   error: css``,
   errorText: css`
-    color: red;
+    font-size: 0.85rem;
+    color: #f03e3e;
   `,
   buttonContainer: css`
     margin-top: 1.5rem;
@@ -332,6 +370,10 @@ const styles = {
 
     :hover {
       background-color: #343a40;
+    }
+
+    :disabled {
+      background-color: #868e96;
     }
   `,
   signIn: css`
@@ -357,5 +399,30 @@ const Layout: React.FunctionComponent = ({ children }) => (
 )
 
 SignUp.Layout = Layout
+
+function validate({
+  name,
+  email,
+  password,
+}: InputFields): ValidationReport<InputFields> {
+  const messages: Partial<InputFields> = {}
+
+  if (!name.trim()) {
+    messages.name = 'Please enter your name.'
+  }
+
+  if (!validator.isEmail(email)) {
+    messages.email = 'Please enter a valid email address.'
+  }
+
+  if (password.length < 8) {
+    messages.password = 'Password must be at least 8 characters.'
+  }
+
+  return {
+    isValid: isEmpty(messages),
+    messages,
+  }
+}
 
 export default SignUp

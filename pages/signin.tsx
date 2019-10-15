@@ -3,41 +3,71 @@ import Link from 'next/link'
 import Router from 'next/router'
 import { useDispatch } from 'react-redux'
 import { css } from '@emotion/core'
+import validator from 'validator'
+import isEmpty from 'lodash.isempty'
 
+import { ValidationReport } from '../core/types/misc'
 import { signIn } from '../core/services/auth'
 import { gotUser } from '../core/actions/user'
 import { Facebook } from '../components/facebook-logo'
 import { Google } from '../components/google-logo'
 
+interface InputFields {
+  email: string
+  password: string
+}
+
 const SignIn = () => {
   const dispatch = useDispatch()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState<Partial<InputFields>>({})
   const [error, setError] = useState('')
+  const [isPending, setIsPending] = useState(false)
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target
 
-    if (name === 'email') setEmail(value)
-    else if (name === 'password') setPassword(value)
+      if (name === 'email') {
+        setEmail(value)
+        setErrors({ ...errors, email: '' })
+      } else if (name === 'password') {
+        setPassword(value)
+        setErrors({ ...errors, password: '' })
+      }
 
-    setError('')
-  }, [])
+      setError('')
+    },
+    [errors]
+  )
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsPending(true)
+
+    const { isValid, messages } = validate({ email, password })
+
+    if (!isValid) {
+      setErrors(messages)
+      setIsPending(false)
+      return
+    }
 
     try {
       const res = await signIn(email, password)
 
       if (res.ok) {
         dispatch(gotUser(res.data.user))
+
         Router.push('/')
       } else {
         setError(res.data.message)
+        setIsPending(false)
       }
     } catch (err) {
-      setError('Something went wrong')
+      setError("Something's not right. Try again.")
+      setIsPending(false)
     }
   }
 
@@ -91,7 +121,7 @@ const SignIn = () => {
                 Email
               </label>
               <input
-                css={styles.input}
+                css={[styles.input, errors.email && styles.inputError]}
                 id="emailInput"
                 name="email"
                 type="email"
@@ -100,11 +130,16 @@ const SignIn = () => {
               />
             </div>
             <div css={styles.field}>
-              <label css={styles.label} htmlFor="passwordInput">
-                Password
-              </label>
+              <div css={styles.labelRow}>
+                <label css={styles.label} htmlFor="passwordInput">
+                  Password
+                </label>
+                <Link href="">
+                  <a css={styles.forgotPassword}>Forgot password?</a>
+                </Link>
+              </div>
               <input
-                css={styles.input}
+                css={[styles.input, errors.password && styles.inputError]}
                 id="passwordInput"
                 name="password"
                 type="password"
@@ -118,7 +153,7 @@ const SignIn = () => {
             </div>
 
             <div css={styles.buttonContainer}>
-              <button css={styles.button} type="submit">
+              <button css={styles.button} type="submit" disabled={isPending}>
                 Sign In
               </button>
             </div>
@@ -202,7 +237,7 @@ const styles = {
   `,
   bullet: css`
     margin: 0 0 1.5rem 0;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   `,
   sns: css``,
   continueWith: css`
@@ -259,10 +294,18 @@ const styles = {
     display: flex;
     flex-direction: column;
   `,
+  labelRow: css`
+    display: flex;
+    justify-content: space-between;
+  `,
   label: css`
     margin-bottom: 0.4rem;
     font-weight: 500;
     font-size: 0.9rem;
+  `,
+  forgotPassword: css`
+    font-size: 0.8rem;
+    color: #719192;
   `,
   input: css`
     outline: none;
@@ -271,9 +314,13 @@ const styles = {
     padding: 0.75rem 1rem;
     background-color: #f1f3f5;
   `,
+  inputError: css`
+    border-color: #fa5252;
+  `,
   error: css``,
   errorText: css`
-    color: red;
+    font-size: 0.85rem;
+    color: #f03e3e;
   `,
   buttonContainer: css`
     margin-top: 1.5rem;
@@ -291,6 +338,10 @@ const styles = {
 
     :hover {
       background-color: #343a40;
+    }
+
+    :disabled {
+      background-color: #868e96;
     }
   `,
   signUp: css`
@@ -316,5 +367,25 @@ const Layout: React.FunctionComponent = ({ children }) => (
 )
 
 SignIn.Layout = Layout
+
+function validate({
+  email,
+  password,
+}: InputFields): ValidationReport<InputFields> {
+  const messages: Partial<InputFields> = {}
+
+  if (!validator.isEmail(email)) {
+    messages.email = 'Please enter your email address.'
+  }
+
+  if (!password.length) {
+    messages.password = 'Please enter a password'
+  }
+
+  return {
+    isValid: isEmpty(messages),
+    messages,
+  }
+}
 
 export default SignIn
