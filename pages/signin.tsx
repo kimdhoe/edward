@@ -278,9 +278,17 @@ const styles = {
   `,
   facebookButton: css`
     background-color: rgba(66, 103, 178, 0.97);
+
+    :hover {
+      background-color: rgba(66, 103, 178, 1);
+    }
   `,
   googleButton: css`
     background-color: rgba(219, 68, 55, 0.95);
+
+    :hover {
+      background-color: rgba(219, 68, 55, 1);
+    }
   `,
   snsIcon: css`
     position: absolute;
