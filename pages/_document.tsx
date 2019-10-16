@@ -55,9 +55,7 @@ const FacebookInitScript = () => (
 )
 
 const GoogleInitScript = () => (
-  <>
-    <script src="https://apis.google.com/js/platform.js" async defer />
-  </>
+  <script src="https://apis.google.com/js/platform.js" async defer />
 )
 
 export default MyDocument

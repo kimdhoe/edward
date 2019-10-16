@@ -57,12 +57,13 @@ const globalStyles = css`
     --color-text-dark: ${colors.textDark};
 
     box-sizing: border-box;
-
     *,
     *:before,
     *:after {
       box-sizing: inherit;
     }
+
+    font-size: 14px;
   }
 
   body {

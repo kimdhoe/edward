@@ -2,12 +2,12 @@ import { createStore, applyMiddleware, combineReducers, Store } from 'redux'
 import thunk from 'redux-thunk'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
-import { user } from './reducers/user'
+import { account } from './reducers/account'
 
 export type AppState = ReturnType<typeof rootReducer>
 
 const rootReducer = combineReducers({
-  user,
+  account,
 })
 
 export function initializeStore(preloadedState: AppState): Store {

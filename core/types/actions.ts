@@ -1,8 +1,8 @@
-import { User } from './user'
+import { Account } from './account'
 
-export interface GotUserAction {
-  type: 'GOT_USER'
-  user: User | null
+export interface GotAccountAction {
+  type: 'GOT_ACCOUNT'
+  account: Account | null
 }
 
-export type UserACtionTypes = GotUserAction
+export type AccountActionTypes = GotAccountAction

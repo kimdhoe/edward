@@ -10,7 +10,7 @@ import isEmpty from 'lodash.isempty'
 
 import { ValidationReport } from '../core/types/misc'
 import { signIn, continueWithFacebook } from '../core/services/auth'
-import { gotUser } from '../core/actions/user'
+import { gotAccount } from '../core/actions/account'
 import { ContinueWithSNS } from '../components/continue-with-sns'
 
 type NextPageContextWithStore = NextPageContext & { store: Store }
@@ -61,7 +61,7 @@ const SignIn = () => {
       const res = await signIn(email, password)
 
       if (res.ok) {
-        dispatch(gotUser(res.data.user))
+        dispatch(gotAccount(res.data.account))
         Router.push('/')
       } else {
         setError(res.data.message)
@@ -157,9 +157,9 @@ const SignIn = () => {
 // Logged-in users cannot access this page.
 SignIn.getInitialProps = async (ctx: NextPageContextWithStore) => {
   const { store, res } = ctx
-  const { user } = store.getState()
+  const { account } = store.getState()
 
-  if (!user) return {}
+  if (!account) return {}
 
   if (res) {
     res.writeHead(302, { Location: '/' })

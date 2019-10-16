@@ -7,7 +7,7 @@ import {
   continueWithFacebook,
   continueWithGoogle,
 } from '../../core/services/auth'
-import { gotUser } from '../../core/actions/user'
+import { gotAccount } from '../../core/actions/account'
 import { Facebook } from '../facebook-logo'
 import { Google } from '../google-logo'
 
@@ -36,7 +36,7 @@ export const ContinueWithSNS = () => {
               const accessToken = googleUser.getAuthResponse().id_token
               const res = await continueWithGoogle({ accessToken })
               if (res.ok) {
-                dispatch(gotUser(res.data.user))
+                dispatch(gotAccount(res.data.account))
                 Router.push('/')
               } else {
                 console.log(res.data.message)
@@ -68,7 +68,7 @@ export const ContinueWithSNS = () => {
         })
 
         if (res.ok) {
-          dispatch(gotUser(res.data.user))
+          dispatch(gotAccount(res.data.account))
           setIsPending(false)
           Router.push('/')
         } else {

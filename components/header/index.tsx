@@ -4,11 +4,11 @@ import { useSelector } from 'react-redux'
 import { css } from '@emotion/core'
 
 import { AppState } from '../../core/store'
-import { User } from '../../core/types/user'
+import { Account } from '../../core/types/account'
 import * as auth from '../../core/services/auth'
 
 const Header: React.FunctionComponent = () => {
-  const user = useSelector((state: AppState) => state.user)
+  const account = useSelector((state: AppState) => state.account)
 
   return (
     <header css={styles.container}>
@@ -17,16 +17,20 @@ const Header: React.FunctionComponent = () => {
           <a>A-WIP</a>
         </Link>
       </h1>
-      <nav>{user ? <NavSignedIn user={user} /> : <NavSignedOut />}</nav>
+      <nav>
+        {account ? <NavSignedIn account={account} /> : <NavSignedOut />}
+      </nav>
     </header>
   )
 }
 
 interface NavSignedInProps {
-  user: User
+  account: Account
 }
 
-const NavSignedIn: React.FunctionComponent<NavSignedInProps> = ({ user }) => {
+const NavSignedIn: React.FunctionComponent<NavSignedInProps> = ({
+  account,
+}) => {
   const handleSignOut = async () => {
     await auth.signOut()
     window.location.reload(true)
@@ -34,7 +38,7 @@ const NavSignedIn: React.FunctionComponent<NavSignedInProps> = ({ user }) => {
 
   return (
     <div css={styles.nav}>
-      <div css={styles.navItem}>{user.name}</div>
+      <div css={styles.navItem}>{account.name}</div>
       <div css={styles.navItem}>
         <button onClick={handleSignOut}>Sign Out</button>
       </div>

@@ -4,7 +4,7 @@ import { NextPageContext } from 'next'
 
 import { hopper } from './hopper'
 import { HopperResponse, HopperSignInData } from '../types/hopper'
-import { gotUser } from '../actions/user'
+import { gotAccount } from '../actions/account'
 
 export function signUp(
   name: string,
@@ -93,7 +93,7 @@ export async function signOut() {
   }
 }
 
-// Fetch user data using JWT token cookie and save into the Redux store,
+// Fetch account data using JWT token cookie and save into the Redux store,
 // so that logged-in state can be rendered on server.
 // Assume ctx includes Redux store.
 export async function populateUserIfPossible(ctx: NextPageContext) {
@@ -107,11 +107,16 @@ export async function populateUserIfPossible(ctx: NextPageContext) {
       const res = await signInWithToken(token)
 
       if (res.ok) {
-        const { user } = res.data
+        const { account } = res.data
         const { store } = ctx as NextPageContext & { store: Store }
 
         store.dispatch(
-          gotUser({ id: user.id, name: user.name, email: user.email })
+          gotAccount({
+            id: account.id,
+            name: account.name,
+            email: account.email,
+            token,
+          })
         )
       } else {
         // If sign-in request fails, sign out (delete token in cookie).

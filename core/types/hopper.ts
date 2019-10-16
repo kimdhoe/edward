@@ -1,7 +1,7 @@
-import { User } from './user'
+import { Account } from './account'
 
 export interface HopperSignInData {
-  user: User
+  account: Account
 }
 
 export type HopperSuccessDataTypes = HopperSignInData | void

@@ -20,7 +20,6 @@ const styles = {
   container: css``,
   wrapper: css`
     margin: 0 auto;
-    max-width: 1024px;
     /* [1] Sticky footer */
     display: flex; /* [1] */
     flex-direction: column; /* [1] */
