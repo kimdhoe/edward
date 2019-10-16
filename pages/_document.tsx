@@ -20,6 +20,7 @@ class MyDocument extends Document {
         <Head />
         <body>
           <FacebookInitScript />
+          <GoogleInitScript />
           <Main />
           <NextScript />
         </body>
@@ -51,6 +52,12 @@ const FacebookInitScript = () => (
       `,
     }}
   ></script>
+)
+
+const GoogleInitScript = () => (
+  <>
+    <script src="https://apis.google.com/js/platform.js" async defer />
+  </>
 )
 
 export default MyDocument
