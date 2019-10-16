@@ -1,8 +1,17 @@
 import { hopper } from './hopper'
 import { useSelector } from 'react-redux'
 import { AppState } from '../store'
+import {
+  HopperResponse,
+  HopperWorkData,
+  HopperWorksData,
+} from '../types/hopper'
 
 let _token: string | null = null
+
+export const getWorks = async (): Promise<HopperResponse<HopperWorksData>> => {
+  return await hopper.get('api/work').json()
+}
 
 const _createWork = async ({
   name,
@@ -13,8 +22,8 @@ const _createWork = async ({
   description: string
   category: string
   token?: string
-}) => {
-  const res = await hopper
+}): Promise<HopperResponse<HopperWorkData>> => {
+  return await hopper
     .post('api/work', {
       json: { name, description, category },
       headers: {
@@ -22,8 +31,6 @@ const _createWork = async ({
       },
     })
     .json()
-
-  return res
 }
 
 export const useWorkService = () => {

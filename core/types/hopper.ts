@@ -1,10 +1,23 @@
 import { Account } from './account'
+import { Work } from './work'
 
 export interface HopperSignInData {
   account: Account
 }
 
-export type HopperSuccessDataTypes = HopperSignInData | void
+export interface HopperWorksData {
+  works: Work[]
+}
+
+export interface HopperWorkData {
+  work: Work
+}
+
+export type HopperSuccessDataTypes =
+  | HopperSignInData
+  | HopperWorkData
+  | HopperWorksData
+  | void
 
 export interface HopperSuccess<T extends HopperSuccessDataTypes> {
   ok: true

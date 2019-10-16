@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { Store } from 'redux'
 
 import { User } from '../core/types/account'
+import { Work } from '../core/types/work'
+import { getWorks } from '../core/services/work'
 
 type NextPageContextWithStore = NextPageContext & { store: Store }
 
@@ -12,29 +14,19 @@ interface Props {
   works: Work[]
 }
 
-interface Work {
-  id: string
-  name: string
-  category: string
-  description: string
-  creator: any
-}
-
 const Home: NextPage<Props> = ({ works }) => {
-  useEffect(() => {}, [])
-
   return (
     <div css={styles.container}>
       <div css={styles.latestWorks}>
         <h2 css={styles.latestWorksHeading}>Latest</h2>
         <div css={styles.latestWorksContainer}>
           {works.map(work => (
-            <div key={work.id}>
+            <div key={work._id}>
               <WorkCard
-                id={work.id}
+                id={work._id}
                 name={work.name}
                 category={work.category}
-                creator={work.creator}
+                creator={work.createdBy}
               />
             </div>
           ))}
@@ -82,6 +74,7 @@ const WorkCard: React.FunctionComponent<WorkCardProps> = ({
 
 const workCardStyles = {
   container: css`
+    margin-right: 1.3rem;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
     border-radius: 5px;
     width: 250px;
@@ -102,6 +95,7 @@ const workCardStyles = {
   category: css`
     margin-top: 1rem;
     display: flex;
+    justify-content: flex-end;
   `,
   categoryText: css`
     margin: 0;
@@ -125,22 +119,30 @@ const workCardStyles = {
 }
 
 Home.getInitialProps = async (ctx: NextPageContext) => {
-  return {
-    works: [
-      {
-        id: '1',
-        name: 'First Work',
-        category: 'Art',
-        description:
-          'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, similique sit? Praesentium consectetur, repudiandae sequi perspiciatis molestias voluptatibus natus quibusdam libero illum voluptate dolores pariatur nemo id! Expedita, repellendus perferendis!',
-        creator: {
-          id: '1',
-          name: 'Anton David',
-          email: '',
-        },
-      },
-    ],
+  const res = await getWorks()
+
+  if (res.ok) {
+    return { works: res.data.works }
   }
+
+  return { works: [] }
+
+  // return {
+  //   works: [
+  //     {
+  //       id: '1',
+  //       name: 'First Work',
+  //       category: 'Art',
+  //       description:
+  //         'Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam, similique sit? Praesentium consectetur, repudiandae sequi perspiciatis molestias voluptatibus natus quibusdam libero illum voluptate dolores pariatur nemo id! Expedita, repellendus perferendis!',
+  //       creator: {
+  //         id: '1',
+  //         name: 'Anton David',
+  //         email: '',
+  //       },
+  //     },
+  //   ],
+  // }
 }
 
 const styles = {
@@ -156,7 +158,10 @@ const styles = {
     padding: 0 1.5rem;
   `,
   latestWorksContainer: css`
-    padding: 0 1.5rem;
+    padding: 0 1.5rem 1.5rem;
+    width: 100%;
+    overflow: scroll;
+    display: flex;
   `,
 }
 

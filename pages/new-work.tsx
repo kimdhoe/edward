@@ -22,9 +22,17 @@ const NewWork = () => {
   const handleStart = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
-    console.log(name, description, category)
-    const res = await workService.createWork({ name, description, category })
-    console.log(res)
+    try {
+      const res = await workService.createWork({ name, description, category })
+
+      if (res.ok) {
+        console.log(res.data)
+      } else {
+        console.log(res.data)
+      }
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   return (
