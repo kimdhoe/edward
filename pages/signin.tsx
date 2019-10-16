@@ -1,16 +1,19 @@
 import React, { useState, useCallback } from 'react'
+import { NextPageContext } from 'next'
 import Link from 'next/link'
 import Router from 'next/router'
 import { useDispatch } from 'react-redux'
+import { Store } from 'redux'
 import { css } from '@emotion/core'
 import validator from 'validator'
 import isEmpty from 'lodash.isempty'
 
 import { ValidationReport } from '../core/types/misc'
-import { signIn } from '../core/services/auth'
+import { signIn, continueWithFacebook } from '../core/services/auth'
 import { gotUser } from '../core/actions/user'
-import { Facebook } from '../components/facebook-logo'
-import { Google } from '../components/google-logo'
+import { ContinueWithSNS } from '../components/continue-with-sns'
+
+type NextPageContextWithStore = NextPageContext & { store: Store }
 
 interface InputFields {
   email: string
@@ -59,7 +62,6 @@ const SignIn = () => {
 
       if (res.ok) {
         dispatch(gotUser(res.data.user))
-
         Router.push('/')
       } else {
         setError(res.data.message)
@@ -91,25 +93,7 @@ const SignIn = () => {
           <h3 css={styles.subHeading}>Welcome back</h3>
           <h2 css={styles.heading}>Sign in to AWIP.</h2>
 
-          <div css={styles.sns}>
-            <div css={styles.continueWith}>
-              <p css={styles.continueWithText}>Continue with</p>
-            </div>
-            <div css={styles.snsButtons}>
-              <button css={[styles.snsButton, styles.facebookButton]}>
-                <span css={styles.snsIcon}>
-                  <Facebook />
-                </span>
-                Facebook
-              </button>
-              <button css={[styles.snsButton, styles.googleButton]}>
-                <span css={styles.snsIcon}>
-                  <Google />
-                </span>
-                Google
-              </button>
-            </div>
-          </div>
+          <ContinueWithSNS />
 
           <div css={styles.or}>
             <span css={styles.orText}>or</span>
@@ -170,6 +154,23 @@ const SignIn = () => {
   )
 }
 
+// Logged-in users cannot access this page.
+SignIn.getInitialProps = async (ctx: NextPageContextWithStore) => {
+  const { store, res } = ctx
+  const { user } = store.getState()
+
+  if (!user) return {}
+
+  if (res) {
+    res.writeHead(302, { Location: '/' })
+    res.end()
+  } else {
+    Router.replace('/')
+  }
+
+  return {}
+}
+
 const styles = {
   container: css`
     min-height: 600px;
@@ -183,7 +184,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     background-color: #f1f3f5;
-    background: url('/static/images/marcus-p.jpg') center center;
+    background: url('/images/marcus-p.jpg') center center;
     background-size: cover;
   `,
   right: css`
@@ -238,63 +239,6 @@ const styles = {
   bullet: css`
     margin: 0 0 1.5rem 0;
     font-size: 1.2rem;
-  `,
-  sns: css``,
-  continueWith: css`
-    margin: 1rem 0;
-    display: flex;
-    align-items: center;
-
-    ::before,
-    ::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background-color: #bbb;
-    }
-  `,
-  continueWithText: css`
-    padding: 0 0.5rem;
-    letter-spacing: 0.05rem;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    color: #888;
-  `,
-  snsButtons: css`
-    display: flex;
-    justify-content: space-between;
-  `,
-  snsButton: css`
-    position: relative;
-    outline: none;
-    border: none;
-    border-radius: 4px;
-    margin-bottom: 0.75rem;
-    padding: 0.9rem 0;
-    width: 49%;
-    font-size: 0.95rem;
-    color: white;
-    cursor: pointer;
-  `,
-  facebookButton: css`
-    background-color: rgba(66, 103, 178, 0.97);
-
-    :hover {
-      background-color: rgba(66, 103, 178, 1);
-    }
-  `,
-  googleButton: css`
-    background-color: rgba(219, 68, 55, 0.95);
-
-    :hover {
-      background-color: rgba(219, 68, 55, 1);
-    }
-  `,
-  snsIcon: css`
-    position: absolute;
-    top: 50%;
-    transform: translateY(-47%);
-    left: 1rem;
   `,
   form: css``,
   field: css`

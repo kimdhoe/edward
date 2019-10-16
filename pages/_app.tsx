@@ -10,6 +10,12 @@ import '../style.css'
 import { initializeStore } from '../core/store'
 import { Layout } from '../components/layout'
 import { colors } from '../core/constants/styles'
+import { NextComponentType } from 'next'
+import { populateUserIfPossible } from '../core/services/auth'
+
+type NextComponentTypeWithLayout = NextComponentType & {
+  Layout?: React.FunctionComponent
+}
 
 interface Props {
   store: Store
@@ -17,7 +23,11 @@ interface Props {
 
 const MyAppWithRedux = withRedux(initializeStore)(
   class MyApp extends App<Props> {
-    static async getInitialProps({ Component, ctx }: AppContext) {
+    static async getInitialProps(appContext: AppContext) {
+      const { Component, ctx } = appContext
+
+      await populateUserIfPossible(ctx)
+
       return {
         pageProps: Component.getInitialProps
           ? await Component.getInitialProps(ctx)
@@ -27,7 +37,8 @@ const MyAppWithRedux = withRedux(initializeStore)(
 
     render() {
       const { Component, pageProps, store } = this.props
-      const PageLayout = (Component as any).Layout || Layout
+      const PageLayout =
+        (Component as NextComponentTypeWithLayout).Layout || Layout
 
       return (
         <Provider store={store}>
