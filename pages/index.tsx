@@ -65,6 +65,9 @@ const WorkCard: React.FunctionComponent<WorkCardProps> = ({
               <div css={workCardStyles.creatorAvatar} />
               <div css={workCardStyles.creatorName}>{creator.name}</div>
             </div>
+            <div css={workCardStyles.progresses}>
+              <p css={workCardStyles.progressesText}>7 progresses</p>
+            </div>
           </div>
         </div>
       </a>
@@ -74,7 +77,7 @@ const WorkCard: React.FunctionComponent<WorkCardProps> = ({
 
 const workCardStyles = {
   container: css`
-    margin-right: 1.3rem;
+    margin-right: 1.5rem;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.12);
     border-radius: 5px;
     width: 250px;
@@ -85,7 +88,7 @@ const workCardStyles = {
     background-color: #f1f3f5;
   `,
   content: css`
-    padding: 1rem;
+    padding: 1rem 1rem 1.2rem 1rem;
   `,
   name: css``,
   nameText: css`
@@ -95,7 +98,6 @@ const workCardStyles = {
   category: css`
     margin-top: 1rem;
     display: flex;
-    justify-content: flex-end;
   `,
   categoryText: css`
     margin: 0;
@@ -116,6 +118,16 @@ const workCardStyles = {
     background-color: #f1f3f5;
   `,
   creatorName: css``,
+  progresses: css`
+    margin: 1rem 0 0 0;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+  `,
+  progressesText: css`
+    margin: 1rem 0 0 0;
+    font-size: 0.9rem;
+  `,
 }
 
 Home.getInitialProps = async (ctx: NextPageContext) => {
