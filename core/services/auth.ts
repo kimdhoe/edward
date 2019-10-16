@@ -69,6 +69,22 @@ export async function continueWithFacebook({
   }
 }
 
+export async function continueWithGoogle({
+  accessToken,
+}: {
+  accessToken: string
+}): Promise<HopperResponse<HopperSignInData>> {
+  try {
+    return hopper
+      .post('continue-with-google', {
+        json: { accessToken },
+      })
+      .json()
+  } catch (err) {
+    return err.response.json()
+  }
+}
+
 export async function signOut() {
   try {
     return hopper.post('signout').json
