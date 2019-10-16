@@ -49,11 +49,30 @@ export async function signInWithToken(
   }
 }
 
+// TODO
+export async function continueWithFacebook({
+  accessToken,
+}: {
+  accessToken: string
+}): Promise<HopperResponse<HopperSignInData>> {
+  try {
+    return hopper
+      .post('continue-with-facebook', {
+        json: {
+          // eslint-disable-next-line @typescript-eslint/camelcase
+          access_token: accessToken,
+        },
+      })
+      .json()
+  } catch (err) {
+    return err.response.json()
+  }
+}
+
 export async function signOut() {
   try {
     return hopper.post('signout').json
   } catch (err) {
-    console.log('Catched', err)
     return err.response.json()
   }
 }

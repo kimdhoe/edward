@@ -1,16 +1,20 @@
 import React, { useState, useCallback } from 'react'
+import { NextPageContext } from 'next'
 import Link from 'next/link'
 import Router from 'next/router'
 import { useDispatch } from 'react-redux'
+import { Store } from 'redux'
 import { css } from '@emotion/core'
 import validator from 'validator'
 import isEmpty from 'lodash.isempty'
 
 import { ValidationReport } from '../core/types/misc'
-import { signIn } from '../core/services/auth'
+import { signIn, continueWithFacebook } from '../core/services/auth'
 import { gotUser } from '../core/actions/user'
 import { Facebook } from '../components/facebook-logo'
 import { Google } from '../components/google-logo'
+
+type NextPageContextWithStore = NextPageContext & { store: Store }
 
 interface InputFields {
   email: string
@@ -42,6 +46,33 @@ const SignIn = () => {
     [errors]
   )
 
+  const handleFacebook = async () => {
+    setIsPending(true)
+    FB.login(
+      async fbRes => {
+        if (fbRes.status !== 'connected') {
+          setIsPending(false)
+          return
+        }
+
+        const res = await continueWithFacebook({
+          accessToken: fbRes.authResponse.accessToken,
+        })
+
+        if (res.ok) {
+          dispatch(gotUser(res.data.user))
+          Router.push('/')
+        } else {
+          setIsPending(false)
+          console.log(res.data.message)
+        }
+      },
+      {
+        scope: 'public_profile,email',
+      }
+    )
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsPending(true)
@@ -59,7 +90,6 @@ const SignIn = () => {
 
       if (res.ok) {
         dispatch(gotUser(res.data.user))
-
         Router.push('/')
       } else {
         setError(res.data.message)
@@ -96,7 +126,10 @@ const SignIn = () => {
               <p css={styles.continueWithText}>Continue with</p>
             </div>
             <div css={styles.snsButtons}>
-              <button css={[styles.snsButton, styles.facebookButton]}>
+              <button
+                css={[styles.snsButton, styles.facebookButton]}
+                onClick={handleFacebook}
+              >
                 <span css={styles.snsIcon}>
                   <Facebook />
                 </span>
@@ -170,6 +203,23 @@ const SignIn = () => {
   )
 }
 
+// Logged-in users cannot access this page.
+SignIn.getInitialProps = async (ctx: NextPageContextWithStore) => {
+  const { store, res } = ctx
+  const { user } = store.getState()
+
+  if (!user) return {}
+
+  if (res) {
+    res.writeHead(302, { Location: '/' })
+    res.end()
+  } else {
+    Router.replace('/')
+  }
+
+  return {}
+}
+
 const styles = {
   container: css`
     min-height: 600px;
@@ -183,7 +233,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     background-color: #f1f3f5;
-    background: url('/static/images/marcus-p.jpg') center center;
+    background: url('/images/marcus-p.jpg') center center;
     background-size: cover;
   `,
   right: css`

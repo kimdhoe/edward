@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { NextPage, NextPageContext } from 'next'
 import { Store } from 'redux'
 import { connect } from 'react-redux'
@@ -10,12 +10,9 @@ interface Props {
 }
 
 const _Home: NextPage<Props> = ({ projects }) => {
-  useEffect(() => {}, [])
-
   return (
     <div>
       <h2>Latest</h2>
-
       <div>
         {projects.map(project => (
           <div key={project}>
@@ -27,7 +24,7 @@ const _Home: NextPage<Props> = ({ projects }) => {
   )
 }
 
-_Home.getInitialProps = async (context: NextPageContextWithStore) => {
+_Home.getInitialProps = async (/* context: NextPageContextWithStore */) => {
   return {
     projects: [0, 1, 2, 3, 4, 5],
   }

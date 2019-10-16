@@ -1,6 +1,8 @@
 import React, { useState, useCallback } from 'react'
+import { NextPageContext } from 'next'
 import Link from 'next/link'
 import Router from 'next/router'
+import { Store } from 'redux'
 import { css } from '@emotion/core'
 import validator from 'validator'
 import isEmpty from 'lodash.isempty'
@@ -9,6 +11,8 @@ import { ValidationReport } from '../core/types/misc'
 import { signUp } from '../core/services/auth'
 import { Facebook } from '../components/facebook-logo'
 import { Google } from '../components/google-logo'
+
+type NextPageContextWithStore = NextPageContext & { store: Store }
 
 interface InputFields {
   name: string
@@ -193,6 +197,23 @@ const SignUp = () => {
   )
 }
 
+// Logged-in users cannot access this page.
+SignUp.getInitialProps = async (ctx: NextPageContextWithStore) => {
+  const { store, res } = ctx
+  const { user } = store.getState()
+
+  if (!user) return {}
+
+  if (res) {
+    res.writeHead(302, { Location: '/' })
+    res.end()
+  } else {
+    Router.replace('/')
+  }
+
+  return {}
+}
+
 const styles = {
   container: css`
     min-height: 750px;
@@ -206,7 +227,7 @@ const styles = {
     display: flex;
     flex-direction: column;
     background-color: #f1f3f5;
-    background: url('/static/images/marcus-p.jpg') center center;
+    background: url('/images/marcus-p.jpg') center center;
     background-size: cover;
   `,
   right: css`
